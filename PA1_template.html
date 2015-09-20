@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title>Reproducible Research: Peer Assessment 1</title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="1348.17">
+  <style type="text/css">
+    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'Lucida Console'; color: #000000; -webkit-text-stroke: #000000; background-color: #f8f8f8}
+    p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'Lucida Console'; color: #000000; -webkit-text-stroke: #000000; background-color: #f8f8f8; min-height: 12.0px}
+    p.p5 {margin: 0.0px 0.0px 12.0px 0.0px; font: 12.0px Helvetica; color: #000000; -webkit-text-stroke: #000000}
+    p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px 'Lucida Console'; color: #000000; -webkit-text-stroke: #000000}
+    span.s1 {font-kerning: none}
+  </style>
+</head>
+<body>
+<h1 style="margin: 0.0px 0.0px 17.7px 0.0px; font: 26.0px Helvetica; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><b>Reproducible Research: Peer Assessment 1</b></span></h1>
+<h2 style="margin: 0.0px 0.0px 17.9px 0.0px; font: 22.0px Helvetica; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><b>Loading and preprocessing the data</b></span></h2>
+<p class="p3"><span class="s1">data &lt;- read.csv("activity.csv", header = TRUE)</span></p>
+<p class="p4"><span class="s1"></span><br></p>
+<p class="p3"><span class="s1"># converting inveterl in to 00:00 time formate data$interval&lt;-</span></p>
+<p class="p3"><span class="s1"># as.factor(sprintf('%02d:%02d', data$interval%/%100 ,data$interval%%100))</span></p>
+<h2 style="margin: 0.0px 0.0px 17.9px 0.0px; font: 22.0px Helvetica; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><b>What is mean total number of steps taken per day?</b></span></h2>
+<p class="p3"><span class="s1">library(reshape2)</span></p>
+<p class="p3"><span class="s1">dateNsteps &lt;- data[, 1:2]</span></p>
+<p class="p3"><span class="s1">data_melt &lt;- melt(dateNsteps, id = "date")</span></p>
+<p class="p3"><span class="s1">stepsPerDay &lt;- dcast(data_melt, date ~ variable, sum)</span></p>
+<p class="p3"><span class="s1">nas &lt;- is.na(stepsPerDay$steps)</span></p>
+<p class="p3"><span class="s1">totalStepsPerDay &lt;- stepsPerDay$steps[!nas]</span></p>
+<p class="p3"><span class="s1">hist(totalStepsPerDay, main = "Total steps per day", xlab = "Total steps per day",<span class="Apple-converted-space"> </span></span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>col = "green")</span></p>
+<p class="p5"><span class="s1"><img src="file:///unknown.png" alt="unknown.png"><span class="Apple-converted-space"> </span></span></p>
+<p class="p3"><span class="s1">mean(stepsPerDay$steps, na.rm = TRUE)</span></p>
+<p class="p6"><span class="s1">## [1] 10766</span></p>
+<p class="p3"><span class="s1">median(stepsPerDay$steps, na.rm = TRUE)</span></p>
+<p class="p6"><span class="s1">## [1] 10765</span></p>
+<h2 style="margin: 0.0px 0.0px 17.9px 0.0px; font: 22.0px Helvetica; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><b>What is the average daily activity pattern?</b></span></h2>
+<p class="p3"><span class="s1">library(ggplot2)</span></p>
+<p class="p3"><span class="s1">tempdata &lt;- data.frame(data$steps, data$interval)</span></p>
+<p class="p3"><span class="s1">names(tempdata) &lt;- c("steps", "interval")</span></p>
+<p class="p3"><span class="s1">data_melt &lt;- melt(tempdata, id = "interval")</span></p>
+<p class="p3"><span class="s1">AverageActivity &lt;- dcast(data_melt, interval ~ variable, mean, na.rm = TRUE)</span></p>
+<p class="p3"><span class="s1">g &lt;- qplot(interval, steps, data = AverageActivity, group = 1, geom = "line") +<span class="Apple-converted-space"> </span></span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>theme(aspect.ratio = 1/2)</span></p>
+<p class="p3"><span class="s1">g + labs(title = "Average daily activity")</span></p>
+<p class="p5"><span class="s1"><img src="file:///unknown_1.png" alt="unknown_1.png"><span class="Apple-converted-space"> </span></span></p>
+<p class="p3"><span class="s1"># g+ scale_x_discrete(breaks = AverageActivity$interval[seq(1,288, by = 6)])</span></p>
+<h2 style="margin: 0.0px 0.0px 17.9px 0.0px; font: 22.0px Helvetica; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><b>Imputing missing values</b></span></h2>
+<p class="p3"><span class="s1">data[is.na(data)] &lt;- AverageActivity$steps</span></p>
+<h2 style="margin: 0.0px 0.0px 17.9px 0.0px; font: 22.0px Helvetica; color: #000000; -webkit-text-stroke: #000000"><span class="s1"><b>Are there differences in activity patterns between weekdays and weekends?</b></span></h2>
+<p class="p3"><span class="s1">wdays &lt;- strptime(data$date, format = "%Y-%m-%d")</span></p>
+<p class="p3"><span class="s1">wd &lt;- weekdays(wdays)</span></p>
+<p class="p3"><span class="s1">we &lt;- wd == "Saturday" | wd == "Sunday"</span></p>
+<p class="p3"><span class="s1">wd[we] &lt;- "weekends"</span></p>
+<p class="p3"><span class="s1">wd[!we] &lt;- "weekdays"</span></p>
+<p class="p3"><span class="s1">data$date &lt;- as.factor(wd)</span></p>
+<p class="p3"><span class="s1">data_melt &lt;- melt(data, id = c("date", "interval"))</span></p>
+<p class="p3"><span class="s1">wdayNsteps &lt;- dcast(data_melt, date + interval ~ variable, mean)</span></p>
+<p class="p3"><span class="s1">library(lattice)</span></p>
+<p class="p3"><span class="s1">xyplot(steps ~ interval | date, data = wdayNsteps, type = "l", main = "Activtiy patterns between weekdays and weekends",<span class="Apple-converted-space"> </span></span></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">    </span>layout = c(1, 2))</span></p>
+<p class="p5"><span class="s1"><img src="file:///unknown_2.png" alt="unknown_2.png"><span class="Apple-converted-space"> </span></span></p>
+</body>
+</html>
